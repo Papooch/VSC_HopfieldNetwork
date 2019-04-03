@@ -17,7 +17,7 @@ def readMatrixText(filename):
    rowCount = int(values[0])
    colCount = int(values[1])
 
-   lineNumber = 0 #variable to keep track of lines read
+   lineNumber = 0 # TODO: variable to keep track of lines read
 
    #print(values)
 
@@ -68,7 +68,7 @@ def writeMatrixText(filename, matrices, symbols=["0", "1"]):
    #TODO: Exception checking
 
    f = open(filename, "w")
-   f.write("%d %d\n" %(len(matrices[0][0]), len(matrices[0][1])))
+   f.write("%d %d\n" %(len(matrices[0]), len(matrices[0][0])))
    f.write(symbols[0] + " " + symbols[1] + "\n")
    for matrix in matrices:
       f.write(";\n")
@@ -81,4 +81,5 @@ def writeMatrixText(filename, matrices, symbols=["0", "1"]):
 
 if __name__ == "__main__":
    mats = readMatrixText("input/in1.txt")
+   print(mats)
    writeMatrixText("output/out1.txt", mats, ["o", "."])
