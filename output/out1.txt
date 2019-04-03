@@ -1,0 +1,26 @@
+5 5
+o .
+;
+oo...
+oo.oo
+oo.oo
+oo.oo
+...oo
+;
+.oooo
+o.ooo
+oo.oo
+ooo.o
+oooo.
+;
+..ooo
+..ooo
+ooo..
+ooo..
+..ooo
+;
+ooooo
+oo.oo
+o...o
+oo.oo
+ooooo
