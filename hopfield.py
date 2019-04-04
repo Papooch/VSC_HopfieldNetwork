@@ -4,55 +4,125 @@ import iofunc
 class Hopfield():
 
     def __init__(self, dim = [1, 1]):
-        self._gridDimensions = dim
+        self.method = 0
+        self._dimensions = dim
+        self._length = dim[0]*dim[1]
         self._patterns = []
         self._weightMatrix = np.zeros([dim[0] * dim[1], dim[0] * dim[1]])
+        self._energy = 0.0
         #self._patternMatrices = []
         self._pixels = np.zeros(dim[0] * dim[1], dtype=int)
 
     def learnPattern(self, pattern):
+        if self.method == 0:
+            self._learnPatternHebbian(pattern)
+        else:
+            self._learnPatternStrokey(pattern)
+
+    def _learnPatternStrokey(self, pattern):
         # W is the weight matrix of the new pattern
-        pattern = np.array(pattern).reshape([1, len(pattern) * len(pattern[0])])[0]
+        pattern = np.array(pattern).reshape([1, self._length])[0]
+        pattern = np.where(pattern==0, -1, pattern)
         N = len(pattern)
         W = np.zeros(self._weightMatrix.shape)
 
-        for j in range(len(self._weightMatrix)):
-            
+        for j in range(len(self._weightMatrix)):           
             for i in range(j):
                 #print(i, ", ", j)
                 #print(pattern[i])
-                Hij = sum(self._weightMatrix[i, :] * pattern)
-                Hji = sum(self._weightMatrix[j, :] * pattern)
+                Hij = sum([self._weightMatrix[i, k] * pattern[k] for k in range(N) if k not in [i, j]])
+                Hji = sum([self._weightMatrix[j, k] * pattern[k] for k in range(N) if k not in [i, j]])
                 W[j, i] = W[i, j] = self._weightMatrix[i, j] + 1/N*(
                     pattern[i]*pattern[j] - pattern[i]*Hji - pattern[j]*Hij
                 )
+                #W[j, i] = W[i, j] = (2*pattern[i]-1)*(2*pattern[j]-1)
+        self._weightMatrix -= W
+        self._patterns.append(pattern)
+
+
+    def _learnPatternHebbian(self, pattern):
+        # W is the weight matrix of the new pattern
+        pattern = np.array(pattern).reshape([1, self._length])[0]
+        W = np.zeros(self._weightMatrix.shape)
+
+        for j in range(len(self._weightMatrix)):           
+            for i in range(j):
+                W[j, i] = W[i, j] = (2*pattern[i]-1)*(2*pattern[j]-1)
         self._weightMatrix += W
-        pass
+        self._patterns.append(pattern)
     
     def unlearnPattern(self, index):
-        pass
+        pattern = self._patterns[index]
+        W = np.zeros(self._weightMatrix.shape)
+
+        for j in range(len(self._weightMatrix)):           
+            for i in range(j):
+                W[j, i] = W[i, j] = (2*pattern[i]-1)*(2*pattern[j]-1)
+        self._weightMatrix -= W
+        del self._patterns[index]
 
     def unlearnAll(self):
+        # TODO:
         pass
 
     def setInitialState(self, pattern):
-        self._pixels = np.array(pattern).reshape([1, len(pattern) * len(pattern[0])])[0]
+        self._pixels = np.array(pattern).reshape([1, self._length])[0]
+        self._energy = 0.0
+        S = self._pixels
+        W = self._weightMatrix
+        self._energy = -1/2*( S @ W @ S.T)
+        
 
     def getWeightMatrix(self):
         return self._weightMatrix
+    
+    def getEnergy(self):
+        return self._energy
+
+    def updatePixel(self, id):
+        deltaE = self._weightMatrix[id, :] @ self._pixels
+        #print(self._weightMatrix[id, :], ".", self._pixels, "=",deltaE)
+        lastPixel = self._pixels[id]        
+        if deltaE >= 0:
+            self._pixels[id] = 1
+        else:
+            self._pixels[id] = 0
+        #print(self._pixels)
+        return bool(lastPixel | self._pixels[id])
+    
+    def getPattern(self, id):
+        return self._patterns[id].copy().reshape(self._dimensions)
+
+    def getCurrentState(self):
+        return self._pixels.copy().reshape(self._dimensions)
 
 
 if __name__ == "__main__":
-    #testPattern = np.array([[1, 0, 1], [0, 1, 1]])
-    #testPattern2 = np.array([[1, 0, 1], [1, 1, 0]])
-    #hopfield = Hopfield([2, 3])
 
     mats = iofunc.readMatrixText("input/in1.txt")
-    hopfield = Hopfield([5, 4])
+    initMat = iofunc.readMatrixText("input/in2.txt")[0]
+    #initMat = np.random.randint(0, 2, [len(mats[0]),len(mats[0][0])], dtype = int)
+    #initMat = np.array([[1,1,1,0,1]])
+    hopfield = Hopfield([len(initMat),len(initMat[0])])
+    hopfield.method = 0
 
     for pattern in mats:
         hopfield.learnPattern(pattern)
 
-    
-    print(hopfield.getWeightMatrix())
-    print(hopfield.getWeightMatrix().shape)
+    #print(hopfield._pixels)
+
+    hopfield.setInitialState(initMat)
+    print(hopfield._pixels)
+
+    print(hopfield._weightMatrix)
+
+    print("Start: \n", hopfield.getCurrentState())
+    print(hopfield.getPattern(0))
+    from random import shuffle
+    order = [i for i in range(len(initMat)*len(initMat[0]))]
+    for i in range(6):
+        for o in order:
+            shuffle(order)
+            hopfield.updatePixel(o)
+            print(hopfield.getCurrentState())
+    print(hopfield.getCurrentState())

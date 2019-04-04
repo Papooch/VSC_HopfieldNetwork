@@ -17,7 +17,7 @@ def readMatrixText(filename):
    rowCount = int(values[0])
    colCount = int(values[1])
 
-   lineNumber = 0 # TODO: variable to keep track of lines read
+   #lineNumber = 0 # TODO: variable to keep track of lines read
 
    #print(values)
 
@@ -79,7 +79,15 @@ def writeMatrixText(filename, matrices, symbols=["0", "1"]):
 
    return True
 
+
+def readMatrixTextMultipleFiles(filelist):
+   matrices = []
+   for filename in filelist:
+      matrices.extend(readMatrixText(filename))
+   return matrices
+
+
 if __name__ == "__main__":
-   mats = readMatrixText("input/in1.txt")
+   mats = readMatrixTextMultipleFiles(["input/in1.txt", "input/in2.txt"])   
    print(mats)
-   writeMatrixText("output/out1.txt", mats, ["o", "."])
+   writeMatrixText("output/out4.txt", mats, ["0", "1"])
