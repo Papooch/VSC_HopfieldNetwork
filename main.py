@@ -1,17 +1,14 @@
 from PyQt5.uic import loadUiType
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from matplotlib.figure import Figure
-
-from matplotlib.animation import FuncAnimation
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 
 import numpy as np
-from matplotlib import pyplot
 
 import iofunc
+from figures import Figures
 from hopfield import Hopfield
 
 
@@ -72,34 +69,6 @@ class Settings():
         self.xSize = 5
         self.distortion = 10
         self.animationSpeed = 5
-
-
-class Figures():
-    def __init__(self, dim=[1,1]):
-        self.arr = np.array(dim, dtype = int)
-        self.figure = Figure()
-        self.ax = self.figure.add_subplot(111)
-        self.ax.tick_params(
-            axis='both',
-            which='both',
-            bottom = False,
-            left = False,
-            labelbottom = False,
-            labelleft = False
-        )
-        self.figure.tight_layout()
-        self.showPattern([[1]])
-
-    def showPattern(self, pattern):
-        self.ax.clear()
-        self.arr = pattern
-        self.image = self.ax.imshow(self.arr, cmap = 'gray')
-        return self.figure
-
-    def updatePattern(self, pattern):
-        self.arr = pattern
-        self.image.set_data(self.arr)
-        return self.figure
 
 
 class Main():
