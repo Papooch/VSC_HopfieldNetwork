@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,1,3">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="3,2">
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
       <item>
        <widget class="QGroupBox" name="groupWorkspace">
         <property name="title">
@@ -298,6 +298,9 @@
          </item>
          <item row="11" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <property name="spacing">
+            <number>6</number>
+           </property>
            <item>
             <widget class="QSpinBox" name="spnAnimationPrescaler">
              <property name="minimum">
@@ -447,6 +450,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="btnDistort">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>↓ Distort ↓</string>
         </property>
@@ -474,12 +480,15 @@
            <item>
             <widget class="QPushButton" name="btnSolve">
              <property name="text">
-              <string>Solve!</string>
+              <string>Reconstruct!</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="btnSaveToWorkspace">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Save to workspace</string>
              </property>
@@ -512,6 +521,8 @@
     <addaction name="separator"/>
     <addaction name="actionNetworkLearnText"/>
     <addaction name="actionNetworkLearnImage"/>
+    <addaction name="actionNetworkLearnWorkspace"/>
+    <addaction name="actionNetworkLearnAllWorkspace"/>
     <addaction name="separator"/>
     <addaction name="actionNetworkUnlearn"/>
     <addaction name="actionNetworkUnlearnAll"/>
@@ -519,7 +530,7 @@
     <addaction name="actionNetworkWeightMatrix"/>
     <addaction name="separator"/>
     <addaction name="actionNetworkSaveToWorkspace"/>
-    <addaction name="actionSave_output_to_file"/>
+    <addaction name="actionNetworkSaveToFile"/>
    </widget>
    <widget class="QMenu" name="menuWorkspace">
     <property name="title">
@@ -598,7 +609,7 @@
   </action>
   <action name="actionNetworkUnlearnAll">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Unlearn all patterns</string>
@@ -614,7 +625,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Show weight matrix...</string>
+    <string>[Show weight matrix...]</string>
    </property>
   </action>
   <action name="actionWorkspaceLoadText">
@@ -627,12 +638,12 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Load pattern from image...</string>
+    <string>[Load pattern from image...]</string>
    </property>
   </action>
   <action name="actionWorkspaceSave">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Save all patterns...</string>
@@ -640,7 +651,7 @@
   </action>
   <action name="actionWorkspaceSaveCurrent">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Save pattern...</string>
@@ -693,18 +704,21 @@
    </property>
   </action>
   <action name="actionNetworkSaveToWorkspace">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Save output to workspace</string>
    </property>
   </action>
   <action name="actionSolve">
    <property name="text">
-    <string>Solve!</string>
+    <string>Reconstruct!</string>
    </property>
   </action>
-  <action name="actionSave_output_to_file">
+  <action name="actionNetworkSaveToFile">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Save output to file...</string>
@@ -725,7 +739,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Help...</string>
+    <string>[Help...]</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -739,7 +753,17 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>About...</string>
+    <string>[About...]</string>
+   </property>
+  </action>
+  <action name="actionNetworkLearnWorkspace">
+   <property name="text">
+    <string>Learn pattern from workspace</string>
+   </property>
+  </action>
+  <action name="actionNetworkLearnAllWorkspace">
+   <property name="text">
+    <string>Learn all from workspace</string>
    </property>
   </action>
  </widget>

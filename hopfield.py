@@ -89,6 +89,7 @@ class Hopfield():
             self._pixels[id] = 0
         #print(self._pixels)
         if lastPixel != self._pixels[id]:
+
             return True
         else:
             return False
@@ -102,7 +103,7 @@ class Hopfield():
 
 if __name__ == "__main__":
 
-    mats = iofunc.readMatrixText("input/in1.txt")
+    mats = [iofunc.readMatrixText("input/in1.txt")[1]]
     initMat = iofunc.readMatrixText("input/in2.txt")[0]
     #initMat = np.random.randint(0, 2, [len(mats[0]),len(mats[0][0])], dtype = int)
     #initMat = np.array([[1,1,1,0,1]])

@@ -44,10 +44,28 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.canvasIO.draw()
 
     def loadPatternsText(self):
-        filename, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","All Files (*);;Text Files (*.txt)")
+        filename, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","Text Files (*.txt);;All Files (*)")
         if not filename:
             return
         self.main.loadPatternsText(filename)
+
+    def savePatternText(self):
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', "pattern.txt", 'Text Files (*.txt);;All Files (*)')
+        if not filename:
+            return
+        self.main.saveWorkspacePatternText(filename)
+
+    def saveAllWorkspacePattternsText(self):
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', "pattern.txt", 'Text Files (*.txt);;All Files (*)')
+        if not filename:
+            return
+        self.main.saveAllWorkspacePatternsText(filename)
+
+    def saveOutputText(self):
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', "pattern.txt", 'Text Files (*.txt);;All Files (*)')
+        if not filename:
+            return
+        self.main.saveOutputText(filename)
 
     def applySettings(self):
         self.main.applyDimensions([self.spnYSize.value(), self.spnXSize.value()])
@@ -92,11 +110,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionWorkspaceClear.triggered.connect(self.main.clearWorkspacePattern)
         self.actionWorkspaceDuplicate.triggered.connect(self.main.duplicateWorkspacePattern)
         self.actionWorkspaceSetAsInput.triggered.connect(self.main.setWorkspaceAsInput)
+        self.actionWorkspaceSaveCurrent.triggered.connect(self.savePatternText)
+        self.actionWorkspaceSave.triggered.connect(self.saveAllWorkspacePattternsText)
 
         #menu Network
         self.actionNetworkDistort.triggered.connect(self.main.distort)
         self.actionNetworkUnlearn.triggered.connect(self.main.unlearnPattern)
         self.actionNetworkSaveToWorkspace.triggered.connect(self.main.saveOutputToWorkspace)
+        self.actionNetworkSaveToFile.triggered.connect(self.saveOutputText)
+        self.actionNetworkUnlearnAll.triggered.connect(self.main.unlearnAllPatterns)
+        self.actionNetworkLearnWorkspace.triggered.connect(self.main.learnPattern)
+        self.actionNetworkLearnAllWorkspace.triggered.connect(self.main.learnAllPatterns)
 
         #buttons Workspace
         self.btnNewPattern.clicked.connect(self.main.newWorkspacePattern)

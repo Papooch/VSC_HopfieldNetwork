@@ -18,6 +18,7 @@ class Settings():
         self.animationSpeed = 10
         self.animationRunningFlag = False
         self.animationPrescaler = 10
+        self.IOEnable = False
 
 class Main():
     def __init__(self, ):
@@ -26,7 +27,6 @@ class Main():
         self.setupFigures([self.settings.xSize, self.settings.ySize])
         self.workspacePatterns = []
         self.learnedPatterns = []
-        self.resetEveryting()
 
     def resetEveryting(self):
         self.noOfWorkspace = 0
@@ -39,6 +39,9 @@ class Main():
         self.figLearned.clear()
         self.figWorkspace.clear()
         self.figIO.clear()
+        self.workspaceToolsEnable(False)
+        self.learnedToolsEnable(False)
+        self.ioToolsEnable(False)
     
     def setupFigures(self, dim):
         self.figWorkspace = Figures(dim)
@@ -48,9 +51,9 @@ class Main():
 
     def applyDimensions(self, dim):
         self.resetEveryting()
-        self.settings.xSize, self.settings.ySize = dim
+        self.settings.ySize, self.settings.xSize = dim
         self.updateCountLabels()
-        self.hopfield = Hopfield([self.settings.xSize, self.settings.ySize])
+        self.hopfield = Hopfield([self.settings.ySize, self.settings.xSize])
         #self.setupFigures(dim)
 
     def loadPatternsText(self, filename):
@@ -61,10 +64,9 @@ class Main():
         #if the imported image is of different dimensions than loaded, reset all
         arr = self.figWorkspace.image.get_array()        
         if  (len(arr) != len(loadedPatterns[0])) or (len(arr[0]) != len(loadedPatterns[0][0])):
-            self.applyDimensions([len(loadedPatterns[0][0]), len(loadedPatterns[0])])
+            self.applyDimensions([len(loadedPatterns[0]), len(loadedPatterns[0][0])])
             mainWindow.spnXSize.setValue(self.settings.xSize)
             mainWindow.spnYSize.setValue(self.settings.ySize)
-            self.figLearned.clear()
             mainWindow.updateCanvasLearned()
 
         self.workspacePatterns.extend(loadedPatterns)
@@ -73,8 +75,21 @@ class Main():
         self.noOfWorkspace = len(self.workspacePatterns)
         self.currentWorkspace = len(self.workspacePatterns)-1
         self.updateCountLabels()
+        self.workspaceToolsEnable(True)
         mainWindow.lblDrawErase.show()
         mainWindow.updateCanvasWorkspace()
+
+    def saveWorkspacePatternText(self, filename):
+        iofunc.writeMatrixText(filename, [self.workspacePatterns[self.currentWorkspace]])
+
+    def saveAllWorkspacePatternsText(self, filename):
+        iofunc.writeMatrixText(filename, self.workspacePatterns)
+
+    def saveOutputText(self, filename):
+        iofunc.writeMatrixText(filename, [self.figIO.arr])
+
+    def learnFromFileText(self):
+        pass
 
     def updateCountLabels(self):
         if not self.learnedPatterns:
@@ -137,6 +152,7 @@ class Main():
         self.noOfLearned = len(self.learnedPatterns)
         self.currentLearned = self.noOfLearned-1
         self.showLearnedNumber(self.currentLearned)
+        self.learnedToolsEnable(True)
         mainWindow.updateCanvasLearned()
 
     def learnAllPatterns(self):
@@ -150,14 +166,20 @@ class Main():
         del self.learnedPatterns[self.currentLearned]
         if not self.learnedPatterns:
             self.figLearned.clear()
+            self.learnedToolsEnable(False)
             mainWindow.updateCanvasLearned()
         self.noOfLearned = len(self.learnedPatterns)
         self.updateCountLabels()
         self.showPreviousLearned()
 
+    def unlearnAllPatterns(self):
+        for _ in range(len(self.learnedPatterns)):
+            self.unlearnPattern()
+
     #workspace control
     def newWorkspacePattern(self, _=None, pattern=None):
         mainWindow.lblDrawErase.show()
+        self.workspaceToolsEnable(True)
         if pattern is None:
             pattern = np.ones([self.settings.ySize, self.settings.xSize], dtype = int)
 
@@ -176,6 +198,7 @@ class Main():
         if not self.workspacePatterns:
             self.figWorkspace.clear()
             mainWindow.updateCanvasWorkspace()
+            self.workspaceToolsEnable(False)
             mainWindow.lblDrawErase.hide()
         self.noOfWorkspace = len(self.workspacePatterns)
         self.updateCountLabels()
@@ -196,6 +219,7 @@ class Main():
         if not self.workspacePatterns:
             return
         self.figIO.showPattern(self.workspacePatterns[self.currentWorkspace].copy())
+        self.ioToolsEnable(True)
         mainWindow.updateCanvasIO()
 
     def saveOutputToWorkspace(self):
@@ -209,13 +233,14 @@ class Main():
             if np.random.rand()*100 < self.settings.distortion:
                 pixel[...] = 1-pixel
         self.figIO.showPattern(pattern)
+        self.ioToolsEnable(True)
         mainWindow.updateCanvasIO()
 
     def solveFinished(self):
         self.hopfieldThread.exit()
-        print("hotovo")
         self.settings.animationRunningFlag = False
-        mainWindow.btnSolve.setText("Solve!")
+        self.solvingInProgress(False)
+        mainWindow.btnSolve.setText("Reconstruct!")
         mainWindow.btnSetAsInput.setEnabled(True)
         mainWindow.actionWorkspaceSetAsInput.setEnabled(True)
 
@@ -223,7 +248,6 @@ class Main():
     def solve(self):
         if self.settings.animationRunningFlag:
             self.settings.animationRunningFlag = False
-            #self.solveFinished()
             return
 
         self.hopfield.setInitialState(self.figIO.arr.copy())
@@ -231,11 +255,52 @@ class Main():
         self.hopfieldThread.finished.connect(self.solveFinished)
         self.settings.animationRunningFlag = True
 
+        self.solvingInProgress(True)
         mainWindow.btnSolve.setText("Stop")
         mainWindow.btnSetAsInput.setDisabled(True)
         mainWindow.actionWorkspaceSetAsInput.setDisabled(True)
 
         self.hopfieldThread.start()
+
+    def workspaceToolsEnable(self, enable = True):
+        mainWindow.btnSetAsInput.setEnabled(enable)
+        mainWindow.actionWorkspaceSetAsInput.setEnabled(enable)
+        mainWindow.btnDeletePattern.setEnabled(enable)
+        mainWindow.btnClearPattern.setEnabled(enable)
+        mainWindow.actionWorkspaceDuplicate.setEnabled(enable)
+        mainWindow.actionWorkspaceDelete.setEnabled(enable)
+        mainWindow.actionWorkspaceDeleteAll.setEnabled(enable)
+        mainWindow.actionWorkspaceClear.setEnabled(enable)
+        mainWindow.btnLearn.setEnabled(enable)
+        mainWindow.btnLearnAll.setEnabled(enable)
+        mainWindow.actionNetworkLearnWorkspace.setEnabled(enable)
+        mainWindow.actionNetworkLearnAllWorkspace.setEnabled(enable)
+        mainWindow.actionWorkspaceSaveCurrent.setEnabled(enable)
+        mainWindow.actionWorkspaceSave.setEnabled(enable)
+
+    def learnedToolsEnable(self, enable = True):
+        mainWindow.btnDistort.setEnabled(enable)
+        mainWindow.actionNetworkDistort.setEnabled(enable)
+        mainWindow.btnUnlearn.setEnabled(enable)
+        mainWindow.actionNetworkUnlearn.setEnabled(enable)
+        mainWindow.actionNetworkUnlearnAll.setEnabled(enable)
+    
+    def ioToolsEnable(self, enable = True):
+        mainWindow.btnSolve.setEnabled(enable)
+        mainWindow.actionSolve.setEnabled(enable)
+        mainWindow.btnSaveToWorkspace.setEnabled(enable)
+        mainWindow.actionNetworkSaveToWorkspace.setEnabled(enable)
+        mainWindow.actionNetworkSaveToFile.setEnabled(enable)
+
+    def solvingInProgress(self, enable = True):
+        mainWindow.btnSetAsInput.setEnabled(not enable)
+        mainWindow.btnDistort.setEnabled(not enable)
+        mainWindow.btnUnlearn.setEnabled(not enable)
+        mainWindow.actionNetworkUnlearnAll.setEnabled(not enable)
+        mainWindow.btnLearn.setEnabled(not enable)
+        mainWindow.btnLearnAll.setEnabled(not enable)
+        mainWindow.actionNetworkSaveToFile.setEnabled(not enable)
+
 
 class HopfieldThread(QtCore.QThread):
     
@@ -250,7 +315,6 @@ class HopfieldThread(QtCore.QThread):
         self.iterationNo = 0
 
     def run(self):
-        print("running")
         order = [i for i in range(len(self.fig.arr)*len(self.fig.arr[0]))]
         pixelChanged = True
         while pixelChanged:
@@ -266,14 +330,10 @@ class HopfieldThread(QtCore.QThread):
                     time.sleep(0.2-(self.settings.animationSpeed/200))
                     self.fig.updatePattern(self.hopfield.getCurrentState())
                     self.canvas.draw()
-                    print(self.iterationNo)
-                    print("bum")
                     self.iterationNo = 0
 
         self.fig.updatePattern(self.hopfield.getCurrentState())
         self.canvas.draw()
-
-
 
 
 if __name__ == "__main__":
@@ -282,8 +342,8 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     
     main = Main()
-    
     mainWindow = mainwindow.MainWindow(main)
+    main.resetEveryting()
     mainWindow.addCanvases(main.figWorkspace.figure, main.figLearned.figure, main.figIO.figure)
     mainWindow.setupCallbacks()
     #main.loadPatterns("input/in1.txt")
