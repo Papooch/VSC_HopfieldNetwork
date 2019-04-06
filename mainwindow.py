@@ -42,17 +42,35 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def updateCanvasIO(self):
         self.canvasIO.draw()
 
-    def loadPatterns(self):
+    def loadPatternsText(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","All Files (*);;Text Files (*.txt)")
         if not filename:
             return
-        self.main.loadPatterns(filename)
+        self.main.loadPatternsText(filename)
+
+    def applySettings(self):
+        self.main.applyDimensions([self.spnYSize.value(), self.spnXSize.value()])
+        self.updateCanvasWorkspace()
+        self.updateCanvasLearned()
 
     def setupCallbacks(self):
-        self.actionLoad_text.triggered.connect(self.loadPatterns)
+        #menu Workspace
+        self.actionWorkspaceLoadText.triggered.connect(self.loadPatternsText)
+
+        #menu Network
+
+        #buttons Workspace
         self.btnWorkspaceLeft.clicked.connect(self.main.showPreviousWorkspace)
         self.btnWorkspaceRight.clicked.connect(self.main.showNextWorkspace)
+
+        #buttons Network
         self.btnLearnedLeft.clicked.connect(self.main.showPreviousLearned)
         self.btnLearnedRight.clicked.connect(self.main.showNextLearned)
-        self.btnLearn.clicked.connect(self.main.learnPattern)
         self.btnUnlearn.clicked.connect(self.main.unlearnPattern)
+
+        #buttons Learn
+        self.btnLearn.clicked.connect(self.main.learnPattern)
+        
+        #buttons Settings
+        self.btnApplySettings.clicked.connect(self.applySettings)
+        

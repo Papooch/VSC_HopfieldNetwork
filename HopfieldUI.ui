@@ -136,7 +136,7 @@
            <item row="0" column="1">
             <widget class="QSpinBox" name="spnXSize">
              <property name="minimum">
-              <number>2</number>
+              <number>1</number>
              </property>
              <property name="maximum">
               <number>100</number>
@@ -156,7 +156,7 @@
            <item row="1" column="1">
             <widget class="QSpinBox" name="spnYSize">
              <property name="minimum">
-              <number>2</number>
+              <number>1</number>
              </property>
              <property name="maximum">
               <number>100</number>
@@ -184,7 +184,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QPushButton" name="buttonApplySettings">
+            <widget class="QPushButton" name="btnApplySettings">
              <property name="text">
               <string>Apply (resets everything)</string>
              </property>
@@ -283,7 +283,7 @@
       <item>
        <widget class="QGroupBox" name="groupLearned">
         <property name="title">
-         <string>Learned patterns</string>
+         <string>Network (Learned patterns)</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,1,0">
          <item>
@@ -364,7 +364,7 @@
       <item>
        <widget class="QGroupBox" name="groupIO">
         <property name="title">
-         <string>Input/output</string>
+         <string>Network (Input/output)</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_8" stretch="1,0">
          <item>
@@ -412,24 +412,39 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuWorkspace">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionLoad_text"/>
-    <addaction name="actionLoad_image"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_workspace"/>
-    <addaction name="actionSave_output"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
-   </widget>
    <widget class="QMenu" name="menuNetwork">
     <property name="title">
      <string>Network</string>
     </property>
-    <addaction name="actionUnlearn_all"/>
-    <addaction name="actionWeight_matrix"/>
+    <addaction name="actionSolve"/>
+    <addaction name="actionNetworkDistort"/>
+    <addaction name="separator"/>
+    <addaction name="actionNetworkLearnText"/>
+    <addaction name="actionNetworkLearnImage"/>
+    <addaction name="separator"/>
+    <addaction name="actionNetworkUnlearn"/>
+    <addaction name="actionNetworkUnlearnAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionNetworkWeightMatrix"/>
+    <addaction name="separator"/>
+    <addaction name="actionNetworkSaveToWorkspace"/>
+    <addaction name="actionSave_output_to_file"/>
+   </widget>
+   <widget class="QMenu" name="menuWorkspace">
+    <property name="title">
+     <string>Workspace</string>
+    </property>
+    <addaction name="actionWorkspaceLoadText"/>
+    <addaction name="actionWorkspaceLoadImage"/>
+    <addaction name="separator"/>
+    <addaction name="actionWorkspaceSaveCurrent"/>
+    <addaction name="actionWorkspaceSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionWorkspaceNew"/>
+    <addaction name="actionWorkspaceDelete"/>
+    <addaction name="actionWorkspaceClear"/>
+    <addaction name="separator"/>
+    <addaction name="actionWorkspaceSetAsInput"/>
    </widget>
    <addaction name="menuWorkspace"/>
    <addaction name="menuNetwork"/>
@@ -480,7 +495,7 @@
     <string>Show weight matrix</string>
    </property>
   </action>
-  <action name="actionUnlearn_all">
+  <action name="actionNetworkUnlearnAll">
    <property name="text">
     <string>Unlearn all patterns</string>
    </property>
@@ -490,9 +505,84 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionWeight_matrix">
+  <action name="actionNetworkWeightMatrix">
    <property name="text">
     <string>Show weight matrix</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceLoadText">
+   <property name="text">
+    <string>Load pattern(s) from text...</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceLoadImage">
+   <property name="text">
+    <string>Load pattern from image...</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceSave">
+   <property name="text">
+    <string>Save all patterns...</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceSaveCurrent">
+   <property name="text">
+    <string>Save pattern...</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceNew">
+   <property name="text">
+    <string>New pattern</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceDelete">
+   <property name="text">
+    <string>Delete pattern</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceClear">
+   <property name="text">
+    <string>Clear pattern</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceSetAsInput">
+   <property name="text">
+    <string>Set pattern as input</string>
+   </property>
+  </action>
+  <action name="actionNetworkLearnText">
+   <property name="text">
+    <string>Learn pattern(s) from text...</string>
+   </property>
+  </action>
+  <action name="actionNetworkLearnImage">
+   <property name="text">
+    <string>Learn pattern from image</string>
+   </property>
+  </action>
+  <action name="actionNetworkUnlearn">
+   <property name="text">
+    <string>Unlearn pattern</string>
+   </property>
+  </action>
+  <action name="actionNetworkDistort">
+   <property name="text">
+    <string>Distort pattern</string>
+   </property>
+  </action>
+  <action name="actionNetworkSaveToWorkspace">
+   <property name="text">
+    <string>Save output to workspace</string>
+   </property>
+  </action>
+  <action name="actionSolve">
+   <property name="text">
+    <string>Solve!</string>
+   </property>
+  </action>
+  <action name="actionSave_output_to_file">
+   <property name="text">
+    <string>Save output to file...</string>
    </property>
   </action>
  </widget>

@@ -3,7 +3,7 @@ import numpy as np
 import iofunc
 from figures import Figures
 from hopfield import Hopfield
-from common import clamp
+from common import rollover
 
 import mainwindow
 from mainwindow import QtWidgets
@@ -32,6 +32,9 @@ class Main():
         self.workspacePatterns.clear()
         self.learnedPatterns.clear()
         self.hopfield.unlearnAll()
+        self.figLearned.clear()
+        self.figWorkspace.clear()
+        self.figIO.clear()
     
     def setupFigures(self, dim):
         self.figWorkspace = Figures(dim)
@@ -42,19 +45,23 @@ class Main():
     def applyDimensions(self, dim):
         self.resetEveryting()
         self.settings.xSize, self.settings.ySize = dim
+        self.updateCountLabels()
         #self.setupFigures(dim)
 
-    def loadPatterns(self, filename):
+    def loadPatternsText(self, filename):
         loadedPatterns = iofunc.readMatrixTextMultipleFiles(filename)
+        self.loadPatterns(loadedPatterns)
 
+    def loadPatterns(self, loadedPatterns):
         #if the imported image is of different dimensions than loaded, reset all
         arr = self.figWorkspace.image.get_array()        
         if  (len(arr) != len(loadedPatterns[0])) or (len(arr[0]) != len(loadedPatterns[0][0])):
-            self.applyDimensions([len(loadedPatterns[0]), len(loadedPatterns[0][0])])
+            self.applyDimensions([len(loadedPatterns[0][0]), len(loadedPatterns[0])])
+            mainWindow.spnXSize.setValue(self.settings.xSize)
+            mainWindow.spnYSize.setValue(self.settings.ySize)
+            self.hopfield = Hopfield([self.settings.xSize, self.settings.ySize])
             self.figLearned.clear()
             mainWindow.updateCanvasLearned()
-
-        self.hopfield = Hopfield([self.settings.xSize, self.settings.ySize])
 
         self.workspacePatterns.extend(loadedPatterns)
 
@@ -69,7 +76,10 @@ class Main():
             mainWindow.lblLearned.setText("0/0")
         else:
             mainWindow.lblLearned.setText("%d/%d" % (self.currentLearned+1, self.noOfLearned))
-        mainWindow.lblWorkspace.setText("%d/%d" % (self.currentWorkspace+1, self.noOfWorkspace))
+        if not self.workspacePatterns:
+            mainWindow.lblWorkspace.setText("0/0")
+        else:
+            mainWindow.lblWorkspace.setText("%d/%d" % (self.currentWorkspace+1, self.noOfWorkspace))
     
     #workspace
     def showNextWorkspace(self):
@@ -134,6 +144,18 @@ class Main():
         self.noOfLearned = len(self.learnedPatterns)
         self.updateCountLabels()
         self.showNextLearned()
+
+    #workspace control
+    def newWorkspacePattern(self, pattern=None):
+        pass
+
+    def deleteWorspacePattern(self):
+        pass
+
+    def clearPatternWorkspacePattern(self):
+        pass
+
+
 
 
 
