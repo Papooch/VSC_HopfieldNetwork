@@ -15,7 +15,9 @@ class Settings():
         self.xSize = 5
         self.distortion = 10
         self.animation = True
-        self.animationSpeed = 5
+        self.animationSpeed = 10
+        self.animationRunningFlag = False
+        self.animationPrescaler = 10
 
 class Main():
     def __init__(self, ):
@@ -209,35 +211,31 @@ class Main():
         self.figIO.showPattern(pattern)
         mainWindow.updateCanvasIO()
 
+    def solveFinished(self):
+        self.hopfieldThread.exit()
+        print("hotovo")
+        self.settings.animationRunningFlag = False
+        mainWindow.btnSolve.setText("Solve!")
+        mainWindow.btnSetAsInput.setEnabled(True)
+        mainWindow.actionWorkspaceSetAsInput.setEnabled(True)
+
+
     def solve(self):
+        if self.settings.animationRunningFlag:
+            self.settings.animationRunningFlag = False
+            #self.solveFinished()
+            return
+
         self.hopfield.setInitialState(self.figIO.arr.copy())
         self.hopfieldThread = HopfieldThread(self.hopfield, self.figIO, mainWindow.canvasIO, self.settings)
-        #self.hopfieldThread.signal.connect(main.updateOutput)
+        self.hopfieldThread.finished.connect(self.solveFinished)
+        self.settings.animationRunningFlag = True
+
+        mainWindow.btnSolve.setText("Stop")
+        mainWindow.btnSetAsInput.setDisabled(True)
+        mainWindow.actionWorkspaceSetAsInput.setDisabled(True)
+
         self.hopfieldThread.start()
-        print("running")
-        #order = [i for i in range(len(self.figIO.arr)*len(self.figIO.arr[0]))]
-        # for i in range(2):
-        #     np.random.shuffle(order)
-        #     for o in order:
-        #         time.sleep(.05)
-        #         self.hopfield.updatePixel(o)
-        #         self.figIO.updatePattern(self.hopfield.getCurrentState())
-        #         print(self.hopfield.getCurrentState())
-        #         mainWindow.updateCanvasIO()
-
-class Thread(QtCore.QThread):
-    # Create a counter thread
-
-    signal = QtCore.pyqtSignal(int)
-
-    def run(self):
-        cnt = 0
-
-        while cnt < 100:
-            cnt+=1
-            time.sleep(1)
-            print("MMMM")
-            self.signal.emit(cnt)
 
 class HopfieldThread(QtCore.QThread):
     
@@ -249,18 +247,29 @@ class HopfieldThread(QtCore.QThread):
         self.fig = figure
         self.canvas = canvas
         self.settings = settings
+        self.iterationNo = 0
 
     def run(self):
+        print("running")
         order = [i for i in range(len(self.fig.arr)*len(self.fig.arr[0]))]
-        for _ in range(2):
+        pixelChanged = True
+        while pixelChanged:
+            pixelChanged = False
             np.random.shuffle(order)
             for o in order:
-                self.hopfield.updatePixel(o)
-                #print(self.hopfield.getCurrentState())
-                if self.settings.animation:
-                    time.sleep(1-(self.settings.animationSpeed/10))
+                self.iterationNo += 1
+                if not self.settings.animationRunningFlag:
+                    return
+                if self.hopfield.updatePixel(o):
+                    pixelChanged = True
+                if self.settings.animation and self.iterationNo >= self.settings.animationPrescaler:
+                    time.sleep(0.2-(self.settings.animationSpeed/200))
                     self.fig.updatePattern(self.hopfield.getCurrentState())
                     self.canvas.draw()
+                    print(self.iterationNo)
+                    print("bum")
+                    self.iterationNo = 0
+
         self.fig.updatePattern(self.hopfield.getCurrentState())
         self.canvas.draw()
 

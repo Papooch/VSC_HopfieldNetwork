@@ -62,10 +62,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.main.settings.distortion = self.spnDistortion.value()
 
     def setAnimaiton(self):
-        self.main.settings.animation = self.chkAnimation.checkState()
+        self.main.settings.animation = self.chkAnimation.isChecked()
 
     def setAnimationSpeed(self):
         self.main.settings.animationSpeed = self.sldAnimationSpeed.value()
+
+    def setAnimationPrescaler(self):
+        self.main.settings.animationPrescaler = self.spnAnimationPrescaler.value()
 
     def figureWorkspaceDrawCallback(self, event):
         if event.xdata == None:
@@ -120,6 +123,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.spnDistortion.valueChanged.connect(self.setDistortion)
         self.chkAnimation.toggled.connect(self.setAnimaiton)
         self.sldAnimationSpeed.valueChanged.connect(self.setAnimationSpeed)
+        self.spnAnimationPrescaler.valueChanged.connect(self.setAnimationPrescaler)
 
         #figure Callbacks
         self.canvasWorkspace.mpl_connect('motion_notify_event', self.figureWorkspaceDrawCallback)

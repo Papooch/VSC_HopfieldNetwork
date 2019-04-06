@@ -88,7 +88,10 @@ class Hopfield():
         else:
             self._pixels[id] = 0
         #print(self._pixels)
-        return bool(lastPixel | self._pixels[id])
+        if lastPixel != self._pixels[id]:
+            return True
+        else:
+            return False
     
     def getPattern(self, id):
         return self._patterns[id].copy().reshape(self._dimensions)
@@ -123,6 +126,6 @@ if __name__ == "__main__":
     for i in range(6):
         for o in order:
             shuffle(order)
-            hopfield.updatePixel(o)
+            print(hopfield.updatePixel(o))
             print(hopfield.getCurrentState())
     print(hopfield.getCurrentState())
