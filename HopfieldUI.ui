@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>645</width>
-    <height>583</height>
+    <width>649</width>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
         <property name="title">
          <string>Workspace</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,1,0">
+        <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,1,0,0">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,10,1">
            <item>
@@ -75,6 +75,43 @@
             </size>
            </property>
            <layout class="QVBoxLayout" name="mplWorkspaceLayout"/>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="wdgLabelContainer" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>14</height>
+            </size>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="lblDrawErase">
+              <property name="text">
+               <string>LMB = Draw, RMB = Erase</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -408,7 +445,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>645</width>
+     <width>649</width>
      <height>21</height>
     </rect>
    </property>
@@ -441,7 +478,9 @@
     <addaction name="actionWorkspaceSave"/>
     <addaction name="separator"/>
     <addaction name="actionWorkspaceNew"/>
+    <addaction name="actionWorkspaceDuplicate"/>
     <addaction name="actionWorkspaceDelete"/>
+    <addaction name="actionWorkspaceDeleteAll"/>
     <addaction name="actionWorkspaceClear"/>
     <addaction name="separator"/>
     <addaction name="actionWorkspaceSetAsInput"/>
@@ -583,6 +622,16 @@
   <action name="actionSave_output_to_file">
    <property name="text">
     <string>Save output to file...</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceDeleteAll">
+   <property name="text">
+    <string>Delete all patterns</string>
+   </property>
+  </action>
+  <action name="actionWorkspaceDuplicate">
+   <property name="text">
+    <string>Duplicate pattern</string>
    </property>
   </action>
  </widget>

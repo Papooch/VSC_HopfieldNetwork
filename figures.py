@@ -3,7 +3,10 @@ from matplotlib.figure import Figure
 
 class Figures():
     def __init__(self, dim=[1,1]):
-        self.arr = np.array(dim, dtype = int)
+        self._lastX = 0
+        self._lastY = 0
+
+        self.arr = np.array(dim, dtype = 'int')
         self.figure = Figure()
         self.ax = self.figure.add_subplot(111)
         self.ax.tick_params(
@@ -21,7 +24,7 @@ class Figures():
     def showPattern(self, pattern):
         self.ax.clear()
         self.arr = pattern
-        self.image = self.ax.imshow(self.arr, cmap = 'gray')
+        self.image = self.ax.imshow(self.arr, cmap = 'gray', vmin=0, vmax=1)
         return self.figure
 
     def updatePattern(self, pattern):
@@ -32,3 +35,9 @@ class Figures():
     def clear(self):
         self.ax.clear()
         return self.figure
+
+    def drawPixel(self, x, y, value):
+        self.arr[y, x] = value
+        self.image.set_data(self.arr)
+        return self.figure
+

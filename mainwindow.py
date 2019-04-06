@@ -14,6 +14,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.main = main
+        self.lblDrawErase.hide()
 
     def addCanvases(self, fWorkspace, fLearned, fIO):
         self.canvasWorkspace = FigureCanvas(fWorkspace)
@@ -53,13 +54,37 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.updateCanvasWorkspace()
         self.updateCanvasLearned()
 
+    def deleteWorkspaceAll(self):
+        for _ in range(len(self.main.workspacePatterns)):
+            self.main.deleteWorkspacePattern()
+
+    def figureWorkspaceDrawCallback(self, event):
+        if event.xdata == None:
+            return
+        value = 0
+        if event.button == 1:
+            value = 0
+        elif event.button == 3:
+            value = 1
+        else:
+            return
+        self.main.figWorkspace.drawPixel(int(event.xdata + .5), int(event.ydata + .5), value)
+        self.updateCanvasWorkspace()
+
     def setupCallbacks(self):
         #menu Workspace
         self.actionWorkspaceLoadText.triggered.connect(self.loadPatternsText)
+        self.actionWorkspaceNew.triggered.connect(self.main.newWorkspacePattern)
+        self.actionWorkspaceDelete.triggered.connect(self.main.deleteWorkspacePattern)
+        self.actionWorkspaceDeleteAll.triggered.connect(self.deleteWorkspaceAll)
 
         #menu Network
 
         #buttons Workspace
+        self.btnNewPattern.clicked.connect(self.main.newWorkspacePattern)
+        self.btnDeletePattern.clicked.connect(self.main.deleteWorkspacePattern)
+        #self.btnClearPattern.clicked
+        #self.btnSetAsInput.clicked
         self.btnWorkspaceLeft.clicked.connect(self.main.showPreviousWorkspace)
         self.btnWorkspaceRight.clicked.connect(self.main.showNextWorkspace)
 
@@ -73,4 +98,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         
         #buttons Settings
         self.btnApplySettings.clicked.connect(self.applySettings)
+
+        #figure Callbacks
+        self.canvasWorkspace.mpl_connect('motion_notify_event', self.figureWorkspaceDrawCallback)
+        self.canvasWorkspace.mpl_connect('button_press_event', self.figureWorkspaceDrawCallback)
+        
         

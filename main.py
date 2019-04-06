@@ -46,6 +46,7 @@ class Main():
         self.resetEveryting()
         self.settings.xSize, self.settings.ySize = dim
         self.updateCountLabels()
+        self.hopfield = Hopfield([self.settings.xSize, self.settings.ySize])
         #self.setupFigures(dim)
 
     def loadPatternsText(self, filename):
@@ -59,7 +60,6 @@ class Main():
             self.applyDimensions([len(loadedPatterns[0][0]), len(loadedPatterns[0])])
             mainWindow.spnXSize.setValue(self.settings.xSize)
             mainWindow.spnYSize.setValue(self.settings.ySize)
-            self.hopfield = Hopfield([self.settings.xSize, self.settings.ySize])
             self.figLearned.clear()
             mainWindow.updateCanvasLearned()
 
@@ -69,6 +69,7 @@ class Main():
         self.noOfWorkspace = len(self.workspacePatterns)
         self.currentWorkspace = len(self.workspacePatterns)-1
         self.updateCountLabels()
+        mainWindow.lblDrawErase.show()
         mainWindow.updateCanvasWorkspace()
 
     def updateCountLabels(self):
@@ -126,8 +127,8 @@ class Main():
     #---
     def learnPattern(self):
         pattern = self.workspacePatterns[self.currentWorkspace]
-        self.hopfield.learnPattern(pattern)
-        self.learnedPatterns.append(pattern)
+        self.hopfield.learnPattern(pattern.copy())
+        self.learnedPatterns.append(pattern.copy())
         self.noOfLearned = len(self.learnedPatterns)
         self.currentLearned = self.noOfLearned-1
         self.showLearnedNumber(self.currentLearned)
@@ -143,14 +144,34 @@ class Main():
             mainWindow.updateCanvasLearned()
         self.noOfLearned = len(self.learnedPatterns)
         self.updateCountLabels()
-        self.showNextLearned()
+        self.showPreviousLearned()
 
     #workspace control
-    def newWorkspacePattern(self, pattern=None):
-        pass
+    def newWorkspacePattern(self, pattern=[]):
+        mainWindow.lblDrawErase.show()
+        if not pattern:
+            pattern = np.ones([self.settings.ySize, self.settings.xSize], dtype = int)
 
-    def deleteWorspacePattern(self):
+        self.workspacePatterns.append(pattern)
+        self.figWorkspace.showPattern(self.workspacePatterns[-1])
+        self.noOfWorkspace = len(self.workspacePatterns)
+        self.currentWorkspace = len(self.workspacePatterns)-1
+        self.updateCountLabels()
+        mainWindow.updateCanvasWorkspace()
+
+    def deleteWorkspacePattern(self):
+        if not self.workspacePatterns:
+            return
         pass
+        del self.workspacePatterns[self.currentWorkspace]
+        if not self.workspacePatterns:
+            self.figWorkspace.clear()
+            mainWindow.updateCanvasWorkspace()
+            mainWindow.lblDrawErase.hide()
+        pass
+        self.noOfWorkspace = len(self.workspacePatterns)
+        self.updateCountLabels()
+        self.showPreviousWorkspace()
 
     def clearPatternWorkspacePattern(self):
         pass
@@ -167,8 +188,8 @@ if __name__ == "__main__":
     main = Main()
     
     mainWindow = mainwindow.MainWindow(main)
-    mainWindow.setupCallbacks()
     mainWindow.addCanvases(main.figWorkspace.figure, main.figLearned.figure, main.figIO.figure)
+    mainWindow.setupCallbacks()
     #main.loadPatterns("input/in1.txt")
     mainWindow.show()
 
