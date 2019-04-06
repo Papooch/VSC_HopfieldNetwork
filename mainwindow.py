@@ -58,6 +58,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         for _ in range(len(self.main.workspacePatterns)):
             self.main.deleteWorkspacePattern()
 
+    def setDistortion(self): 
+        self.main.settings.distortion = self.spnDistortion.value()
+
+    def setAnimaiton(self):
+        self.main.settings.animation = self.chkAnimation.checkState()
+
+    def setAnimationSpeed(self):
+        self.main.settings.animationSpeed = self.sldAnimationSpeed.value()
+
     def figureWorkspaceDrawCallback(self, event):
         if event.xdata == None:
             return
@@ -77,14 +86,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionWorkspaceNew.triggered.connect(self.main.newWorkspacePattern)
         self.actionWorkspaceDelete.triggered.connect(self.main.deleteWorkspacePattern)
         self.actionWorkspaceDeleteAll.triggered.connect(self.deleteWorkspaceAll)
+        self.actionWorkspaceClear.triggered.connect(self.main.clearWorkspacePattern)
+        self.actionWorkspaceDuplicate.triggered.connect(self.main.duplicateWorkspacePattern)
+        self.actionWorkspaceSetAsInput.triggered.connect(self.main.setWorkspaceAsInput)
 
         #menu Network
+        self.actionNetworkDistort.triggered.connect(self.main.distort)
+        self.actionNetworkUnlearn.triggered.connect(self.main.unlearnPattern)
+        self.actionNetworkSaveToWorkspace.triggered.connect(self.main.saveOutputToWorkspace)
 
         #buttons Workspace
         self.btnNewPattern.clicked.connect(self.main.newWorkspacePattern)
         self.btnDeletePattern.clicked.connect(self.main.deleteWorkspacePattern)
-        #self.btnClearPattern.clicked
-        #self.btnSetAsInput.clicked
+        self.btnClearPattern.clicked.connect(self.main.clearWorkspacePattern)
+        self.btnSetAsInput.clicked.connect(self.main.setWorkspaceAsInput)
         self.btnWorkspaceLeft.clicked.connect(self.main.showPreviousWorkspace)
         self.btnWorkspaceRight.clicked.connect(self.main.showNextWorkspace)
 
@@ -92,12 +107,19 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.btnLearnedLeft.clicked.connect(self.main.showPreviousLearned)
         self.btnLearnedRight.clicked.connect(self.main.showNextLearned)
         self.btnUnlearn.clicked.connect(self.main.unlearnPattern)
+        self.btnDistort.clicked.connect(self.main.distort)
+        self.btnSaveToWorkspace.clicked.connect(self.main.saveOutputToWorkspace)
+        self.btnSolve.clicked.connect(self.main.solve)
 
         #buttons Learn
         self.btnLearn.clicked.connect(self.main.learnPattern)
+        self.btnLearnAll.clicked.connect(self.main.learnAllPatterns)
         
         #buttons Settings
         self.btnApplySettings.clicked.connect(self.applySettings)
+        self.spnDistortion.valueChanged.connect(self.setDistortion)
+        self.chkAnimation.toggled.connect(self.setAnimaiton)
+        self.sldAnimationSpeed.valueChanged.connect(self.setAnimationSpeed)
 
         #figure Callbacks
         self.canvasWorkspace.mpl_connect('motion_notify_event', self.figureWorkspaceDrawCallback)

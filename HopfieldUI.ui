@@ -250,6 +250,9 @@
            </item>
            <item row="5" column="1">
             <widget class="QSlider" name="sldAnimationSpeed">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="maximum">
               <number>10</number>
              </property>
@@ -485,8 +488,16 @@
     <addaction name="separator"/>
     <addaction name="actionWorkspaceSetAsInput"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>?</string>
+    </property>
+    <addaction name="actionHelp"/>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuWorkspace"/>
    <addaction name="menuNetwork"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad_text">
@@ -535,6 +546,9 @@
    </property>
   </action>
   <action name="actionNetworkUnlearnAll">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Unlearn all patterns</string>
    </property>
@@ -545,8 +559,11 @@
    </property>
   </action>
   <action name="actionNetworkWeightMatrix">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>Show weight matrix</string>
+    <string>Show weight matrix...</string>
    </property>
   </action>
   <action name="actionWorkspaceLoadText">
@@ -555,16 +572,25 @@
    </property>
   </action>
   <action name="actionWorkspaceLoadImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Load pattern from image...</string>
    </property>
   </action>
   <action name="actionWorkspaceSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save all patterns...</string>
    </property>
   </action>
   <action name="actionWorkspaceSaveCurrent">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save pattern...</string>
    </property>
@@ -590,11 +616,17 @@
    </property>
   </action>
   <action name="actionNetworkLearnText">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Learn pattern(s) from text...</string>
    </property>
   </action>
   <action name="actionNetworkLearnImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Learn pattern from image</string>
    </property>
@@ -620,6 +652,9 @@
    </property>
   </action>
   <action name="actionSave_output_to_file">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save output to file...</string>
    </property>
@@ -632,6 +667,28 @@
   <action name="actionWorkspaceDuplicate">
    <property name="text">
     <string>Duplicate pattern</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Help...</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>About...</string>
    </property>
   </action>
  </widget>

@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 import iofunc
 from figures import Figures
@@ -6,13 +7,14 @@ from hopfield import Hopfield
 from common import rollover
 
 import mainwindow
-from mainwindow import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 class Settings():
     def __init__(self):
         self.ySize = 5
         self.xSize = 5
         self.distortion = 10
+        self.animation = True
         self.animationSpeed = 5
 
 class Main():
@@ -125,14 +127,19 @@ class Main():
         mainWindow.updateCanvasLearned()
     
     #---
-    def learnPattern(self):
-        pattern = self.workspacePatterns[self.currentWorkspace]
+    def learnPattern(self, _=None, pattern=None):
+        if pattern is None:
+            pattern = self.workspacePatterns[self.currentWorkspace]
         self.hopfield.learnPattern(pattern.copy())
         self.learnedPatterns.append(pattern.copy())
         self.noOfLearned = len(self.learnedPatterns)
         self.currentLearned = self.noOfLearned-1
         self.showLearnedNumber(self.currentLearned)
         mainWindow.updateCanvasLearned()
+
+    def learnAllPatterns(self):
+        for pattern in self.workspacePatterns:
+            self.learnPattern(pattern=pattern)
 
     def unlearnPattern(self):
         if not self.learnedPatterns:
@@ -147,9 +154,9 @@ class Main():
         self.showPreviousLearned()
 
     #workspace control
-    def newWorkspacePattern(self, pattern=[]):
+    def newWorkspacePattern(self, _=None, pattern=None):
         mainWindow.lblDrawErase.show()
-        if not pattern:
+        if pattern is None:
             pattern = np.ones([self.settings.ySize, self.settings.xSize], dtype = int)
 
         self.workspacePatterns.append(pattern)
@@ -168,14 +175,94 @@ class Main():
             self.figWorkspace.clear()
             mainWindow.updateCanvasWorkspace()
             mainWindow.lblDrawErase.hide()
-        pass
         self.noOfWorkspace = len(self.workspacePatterns)
         self.updateCountLabels()
         self.showPreviousWorkspace()
 
-    def clearPatternWorkspacePattern(self):
-        pass
+    def clearWorkspacePattern(self):
+        if not self.workspacePatterns:
+            return
+        self.workspacePatterns[self.currentWorkspace].fill(1)
+        self.figWorkspace.showPattern(self.workspacePatterns[self.currentWorkspace])
+        mainWindow.updateCanvasWorkspace()
 
+    def duplicateWorkspacePattern(self):
+        self.newWorkspacePattern(pattern=self.workspacePatterns[self.currentWorkspace].copy())
+
+    # IO control
+    def setWorkspaceAsInput(self):
+        if not self.workspacePatterns:
+            return
+        self.figIO.showPattern(self.workspacePatterns[self.currentWorkspace].copy())
+        mainWindow.updateCanvasIO()
+
+    def saveOutputToWorkspace(self):
+        self.newWorkspacePattern(pattern=self.figIO.arr.copy())
+
+    def distort(self):
+        if not self.learnedPatterns:
+            return
+        pattern = self.learnedPatterns[self.currentLearned].copy()
+        for pixel in np.nditer(pattern, op_flags=['readwrite']):
+            if np.random.rand()*100 < self.settings.distortion:
+                pixel[...] = 1-pixel
+        self.figIO.showPattern(pattern)
+        mainWindow.updateCanvasIO()
+
+    def solve(self):
+        self.hopfield.setInitialState(self.figIO.arr.copy())
+        self.hopfieldThread = HopfieldThread(self.hopfield, self.figIO, mainWindow.canvasIO, self.settings)
+        #self.hopfieldThread.signal.connect(main.updateOutput)
+        self.hopfieldThread.start()
+        print("running")
+        #order = [i for i in range(len(self.figIO.arr)*len(self.figIO.arr[0]))]
+        # for i in range(2):
+        #     np.random.shuffle(order)
+        #     for o in order:
+        #         time.sleep(.05)
+        #         self.hopfield.updatePixel(o)
+        #         self.figIO.updatePattern(self.hopfield.getCurrentState())
+        #         print(self.hopfield.getCurrentState())
+        #         mainWindow.updateCanvasIO()
+
+class Thread(QtCore.QThread):
+    # Create a counter thread
+
+    signal = QtCore.pyqtSignal(int)
+
+    def run(self):
+        cnt = 0
+
+        while cnt < 100:
+            cnt+=1
+            time.sleep(1)
+            print("MMMM")
+            self.signal.emit(cnt)
+
+class HopfieldThread(QtCore.QThread):
+    
+    signal = QtCore.pyqtSignal(int)
+    
+    def __init__(self, hopfield, figure, canvas, settings):
+        QtCore.QThread.__init__(self)
+        self.hopfield = hopfield
+        self.fig = figure
+        self.canvas = canvas
+        self.settings = settings
+
+    def run(self):
+        order = [i for i in range(len(self.fig.arr)*len(self.fig.arr[0]))]
+        for _ in range(2):
+            np.random.shuffle(order)
+            for o in order:
+                self.hopfield.updatePixel(o)
+                #print(self.hopfield.getCurrentState())
+                if self.settings.animation:
+                    time.sleep(1-(self.settings.animationSpeed/10))
+                    self.fig.updatePattern(self.hopfield.getCurrentState())
+                    self.canvas.draw()
+        self.fig.updatePattern(self.hopfield.getCurrentState())
+        self.canvas.draw()
 
 
 
