@@ -1,67 +1,12 @@
-from PyQt5.uic import loadUiType
-from PyQt5 import QtCore, QtGui, QtWidgets
-
-from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg as FigureCanvas,
-    NavigationToolbar2QT as NavigationToolbar)
-
 import numpy as np
 
 import iofunc
 from figures import Figures
 from hopfield import Hopfield
+from common import clamp
 
-
-Ui_MainWindow, QMainWindow = loadUiType('HopfieldUI.ui')
-
-def clamp(minv, maxv, value):
-    return min(max(minv, value), maxv)
-
-class MainWindow(Ui_MainWindow, QMainWindow):
-    def __init__(self, ):
-        super(MainWindow, self).__init__()
-        self.setupUi(self)
-
-    def addCanvases(self, fWorkspace, fLearned, fIO):
-        self.canvasWorkspace = FigureCanvas(fWorkspace)
-        self.canvasLearned = FigureCanvas(fLearned)
-        self.canvasIO = FigureCanvas(fIO)
-        self.mplWorkspaceLayout.addWidget(self.canvasWorkspace)
-        self.mplLearnedLayout.addWidget(self.canvasLearned)
-        self.mplIOLayout.addWidget(self.canvasIO)
-        self.canvasWorkspace.draw()
-        self.canvasWorkspace.draw()
-        self.canvasWorkspace.draw()
-        self.canvasList = [self.canvasWorkspace, self.canvasLearned, self.canvasIO]
-        self.mplLayoutList = [self.mplWorkspaceLayout, self.mplLearnedLayout, self.mplIOLayout]
-
-    def removeFigures(self):
-        for i in range(3):
-            self.mplLayoutList[i].removeWidget(self.canvasList[i])
-            self.canvasList[i].close()
-
-    def updateCanvasWorkspace(self):
-        self.canvasWorkspace.draw()
-
-    def updateCanvasLearned(self):
-        self.canvasLearned.draw()
-
-    def updateCanvasIO(self):
-        self.canvasIO.draw()
-
-    def loadPatterns(self):
-        filename, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","All Files (*);;Text Files (*.txt)")
-        if not filename:
-            return
-        main.loadPatterns(filename)
-
-    def setupCallbacks(self):
-        self.actionLoad_text.triggered.connect(self.loadPatterns)
-        self.btnWorkspaceLeft.clicked.connect(main.showPreviousWorkspace)
-        self.btnWorkspaceRight.clicked.connect(main.showNextWorkspace)
-        self.btnLearnedLeft.clicked.connect(main.showPreviousLearned)
-        self.btnLearnedRight.clicked.connect(main.showNextLearned)
-        self.btnLearn.clicked.connect(main.learnPattern)
+import mainwindow
+from mainwindow import QtWidgets
 
 class Settings():
     def __init__(self):
@@ -69,7 +14,6 @@ class Settings():
         self.xSize = 5
         self.distortion = 10
         self.animationSpeed = 5
-
 
 class Main():
     def __init__(self, ):
@@ -107,6 +51,8 @@ class Main():
         arr = self.figWorkspace.image.get_array()        
         if  (len(arr) != len(loadedPatterns[0])) or (len(arr[0]) != len(loadedPatterns[0][0])):
             self.applyDimensions([len(loadedPatterns[0]), len(loadedPatterns[0][0])])
+            self.figLearned.clear()
+            mainWindow.updateCanvasLearned()
 
         self.hopfield = Hopfield([self.settings.xSize, self.settings.ySize])
 
@@ -127,11 +73,15 @@ class Main():
     
     #workspace
     def showNextWorkspace(self):
-        self.currentWorkspace = clamp(0, self.noOfWorkspace-1, self.currentWorkspace+1)
+        if not self.workspacePatterns:
+            return
+        self.currentWorkspace = rollover(0, self.noOfWorkspace-1, self.currentWorkspace+1)
         self.showWorkspaceNumber(self.currentWorkspace)
 
     def showPreviousWorkspace(self):
-        self.currentWorkspace = clamp(0, self.noOfWorkspace-1, self.currentWorkspace-1)
+        if not self.workspacePatterns:
+            return
+        self.currentWorkspace = rollover(0, self.noOfWorkspace-1, self.currentWorkspace-1)
         self.showWorkspaceNumber(self.currentWorkspace)
 
     def showWorkspaceNumber(self, number):
@@ -143,20 +93,27 @@ class Main():
 
     #learned
     def showNextLearned(self):
-        self.currentLearned = clamp(0, self.noOfLearned-1, self.currentLearned+1)
+        if not self.learnedPatterns:
+            return
+        self.currentLearned = rollover(0, self.noOfLearned-1, self.currentLearned+1)
         self.showLearnedNumber(self.currentLearned)
 
     def showPreviousLearned(self):
-        self.currentLearned = clamp(0, self.noOfLearned-1, self.currentLearned-1)
+        if not self.learnedPatterns:
+            return
+        self.currentLearned = rollover(0, self.noOfLearned-1, self.currentLearned-1)
         self.showLearnedNumber(self.currentLearned)
 
     def showLearnedNumber(self, number):
         if not self.learnedPatterns:
+            self.figLearned.clear()
+            mainWindow.updateCanvasLearned()
             return
         self.figLearned.showPattern(self.learnedPatterns[number])
         self.updateCountLabels()
         mainWindow.updateCanvasLearned()
-
+    
+    #---
     def learnPattern(self):
         pattern = self.workspacePatterns[self.currentWorkspace]
         self.hopfield.learnPattern(pattern)
@@ -166,6 +123,19 @@ class Main():
         self.showLearnedNumber(self.currentLearned)
         mainWindow.updateCanvasLearned()
 
+    def unlearnPattern(self):
+        if not self.learnedPatterns:
+            return
+        self.hopfield.unlearnPattern(self.currentLearned)
+        del self.learnedPatterns[self.currentLearned]
+        if not self.learnedPatterns:
+            self.figLearned.clear()
+            mainWindow.updateCanvasLearned()
+        self.noOfLearned = len(self.learnedPatterns)
+        self.updateCountLabels()
+        self.showNextLearned()
+
+
 
 if __name__ == "__main__":
     import sys
@@ -174,7 +144,7 @@ if __name__ == "__main__":
     
     main = Main()
     
-    mainWindow = MainWindow()
+    mainWindow = mainwindow.MainWindow(main)
     mainWindow.setupCallbacks()
     mainWindow.addCanvases(main.figWorkspace.figure, main.figLearned.figure, main.figIO.figure)
     #main.loadPatterns("input/in1.txt")

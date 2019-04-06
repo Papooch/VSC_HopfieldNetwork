@@ -15,7 +15,8 @@ class Figures():
             labelleft = False
         )
         self.figure.tight_layout()
-        self.showPattern([[1]])
+        self.showPattern([[0]])
+        self.clear()
 
     def showPattern(self, pattern):
         self.ax.clear()
@@ -26,4 +27,8 @@ class Figures():
     def updatePattern(self, pattern):
         self.arr = pattern
         self.image.set_data(self.arr)
+        return self.figure
+
+    def clear(self):
+        self.ax.clear()
         return self.figure
