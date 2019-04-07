@@ -41,23 +41,24 @@ class Hopfield():
 
 
     def _learnPatternHebbian(self, pattern):
+        pattern = np.array(pattern, dtype=float).reshape([1, self._length])
         # W is the weight matrix of the new pattern
-        pattern = np.array(pattern).reshape([1, self._length])[0]
-        W = np.zeros(self._weightMatrix.shape)
-
-        for j in range(len(self._weightMatrix)):           
-            for i in range(j):
-                W[j, i] = W[i, j] = (2*pattern[i]-1)*(2*pattern[j]-1)
+        W = (2*pattern[:].T-1) @ (2*pattern[:]-1)  
+        # Explanation: 
+        # W = np.zeros(self._weightMatrix.shape)
+        # for j in range(len(self._weightMatrix)):           
+        #    for i in range(j):
+        #        W[j, i] = W[i, j] = (2*pattern[i]-1)*(2*pattern[j]-1)
+        
+        # Subtract self-weights on the diagonal
+        W *= (1-np.eye(*self._weightMatrix.shape, dtype=float))
         self._weightMatrix += W
         self._patterns.append(pattern)
     
     def unlearnPattern(self, index):
         pattern = self._patterns[index]
-        W = np.zeros(self._weightMatrix.shape)
-
-        for j in range(len(self._weightMatrix)):           
-            for i in range(j):
-                W[j, i] = W[i, j] = (2*pattern[i]-1)*(2*pattern[j]-1)
+        W = (2*pattern[:].T-1) @ (2*pattern[:]-1)
+        W *= (1-np.eye(*self._weightMatrix.shape, dtype=float))
         self._weightMatrix -= W
         del self._patterns[index]
 
@@ -103,8 +104,8 @@ class Hopfield():
 
 if __name__ == "__main__":
 
-    mats = [iofunc.readMatrixText("input/in1.txt")[1]]
-    initMat = iofunc.readMatrixText("input/in2.txt")[0]
+    mats = iofunc.readMatrixText("input/in3.txt")
+    initMat = iofunc.readMatrixText("input/in3.txt")[0]
     #initMat = np.random.randint(0, 2, [len(mats[0]),len(mats[0][0])], dtype = int)
     #initMat = np.array([[1,1,1,0,1]])
     hopfield = Hopfield([len(initMat),len(initMat[0])])
@@ -127,6 +128,6 @@ if __name__ == "__main__":
     for i in range(6):
         for o in order:
             shuffle(order)
-            print(hopfield.updatePixel(o))
-            print(hopfield.getCurrentState())
+            #print(hopfield.updatePixel(o))
+            #print(hopfield.getCurrentState())
     print(hopfield.getCurrentState())
