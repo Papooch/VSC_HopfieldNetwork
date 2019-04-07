@@ -258,7 +258,6 @@ class Main():
         mainWindow.btnSetAsInput.setEnabled(True)
         mainWindow.actionWorkspaceSetAsInput.setEnabled(True)
 
-
     def solve(self):
         if self.settings.animationRunningFlag:
             self.settings.animationRunningFlag = False
@@ -310,6 +309,7 @@ class Main():
         mainWindow.btnSetAsInput.setEnabled(not enable)
         mainWindow.btnDistort.setEnabled(not enable)
         mainWindow.btnUnlearn.setEnabled(not enable)
+        mainWindow.actionNetworkUnlearn.setEnabled(not enable)
         mainWindow.actionNetworkUnlearnAll.setEnabled(not enable)
         mainWindow.btnLearn.setEnabled(not enable)
         mainWindow.btnLearnAll.setEnabled(not enable)

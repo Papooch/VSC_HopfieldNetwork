@@ -8,9 +8,10 @@ from matplotlib.backends.backend_qt5agg import (
 from main import Main
 
 import os
-dirname = os.path.dirname(__file__)
+dirname = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+print(dirname)
 
-Ui_MainWindow, QMainWindow = loadUiType(os.path.join(dirname, 'HopfieldUI.ui'))
+Ui_MainWindow, QMainWindow = loadUiType(os.path.join(dirname, 'source', 'HopfieldUI.ui'))
 
 class MainWindow(Ui_MainWindow, QMainWindow):
     def __init__(self, main):
@@ -97,10 +98,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def setAnimationPrescaler(self):
         self.main.settings.animationPrescaler = self.spnAnimationPrescaler.value()
 
+    def figureWorkspaceClickCallback(self, event):
+        if  not self.main.workspacePatterns:
+            QtWidgets.QMessageBox.information(self, 'Computer says no', "Create a new pattern to draw.")
+            self.updateCanvasWorkspace()
+            return
+        self.figureWorkspaceDrawCallback(event)
+
     def figureWorkspaceDrawCallback(self, event):
         if event.xdata == None:
             return
-        value = 0
+        value = None
         if event.button == 1:
             value = 0
         elif event.button == 3:
@@ -109,6 +117,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             return
         self.main.figWorkspace.drawPixel(int(event.xdata + .5), int(event.ydata + .5), value)
         self.updateCanvasWorkspace()
+
+    def showHelp(self):
+        QtWidgets.QMessageBox.information(self, 'Help', "Use the Workspace area to import, export and edit patterns.\n\nIf you import a pattern with different dimensions than the current one, everything resets (same as clicking on Apply button in settings). You can only import patterns up to 150 pixels in either dimension. Other buttons are pretty self-explanatory.\n\nThe Distort button distorts the currently displayed learned pattern by a percent specified in settings.\n\nClicking on the Reconstruct! button will start the reconstruction of the image in the Input/Output area to one of the learned patterns.\n\nIf you want to animate large patterns, it is best to set the 'Animate every' setting to 100-200 iterations.\n\n\n(Options in [square brackets] have not yet been implemented.)")
+
+    def showAbout(self):
+        QtWidgets.QMessageBox.information(self, 'About', "Hopfield Network implementation for a school project in Soft Computing (VSC)\n\nAuthor: Bc. Onřej Švanda\nYear: 2019\n\nVersion: 0.9.5")
+
 
     def setupCallbacks(self):
         #menu Workspace
@@ -131,6 +146,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.actionNetworkUnlearnAll.triggered.connect(self.main.unlearnAllPatterns)
         self.actionNetworkLearnWorkspace.triggered.connect(self.main.learnPattern)
         self.actionNetworkLearnAllWorkspace.triggered.connect(self.main.learnAllPatterns)
+
+        #menu about
+        self.actionHelp.triggered.connect(self.showHelp)
+        self.actionAbout.triggered.connect(self.showAbout)
+
 
         #buttons Workspace
         self.btnNewPattern.clicked.connect(self.main.newWorkspacePattern)
@@ -161,6 +181,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         #figure Callbacks
         self.canvasWorkspace.mpl_connect('motion_notify_event', self.figureWorkspaceDrawCallback)
-        self.canvasWorkspace.mpl_connect('button_press_event', self.figureWorkspaceDrawCallback)
+        self.canvasWorkspace.mpl_connect('button_press_event', self.figureWorkspaceClickCallback)
         
         
