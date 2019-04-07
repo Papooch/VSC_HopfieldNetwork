@@ -14,4 +14,4 @@ M rows of N symbols
 ;  
 M rows of N symbols  
 
-See sample_unput folder for reference
+See sample_input folder for reference
