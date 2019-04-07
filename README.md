@@ -5,11 +5,13 @@ It was created for a chool project on the Brno University of Technology
 
 Input files format
 ----
+Input patterns can be either images (monochrome for best results) or text files in the following format:
+
 {M} {N}  
 {symbol_for_0} {symbol_for_1}  
 ;  
-N rows of M symbols  
+M rows of N symbols  
 ;  
-N rows of M symbols  
+M rows of N symbols  
 
-See sampleInputFile.txt
+See sample_unput folder for reference
