@@ -712,9 +712,6 @@
    </property>
   </action>
   <action name="actionSolve">
-   <property name="icon">
-    <iconset theme="icon.png"/>
-   </property>
    <property name="text">
     <string>Reconstruct!</string>
    </property>

@@ -122,7 +122,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         QtWidgets.QMessageBox.information(self, 'Help', "Use the Workspace area to import, export and edit patterns.\n\nIf you import a pattern with different dimensions than the current one, everything resets (same as clicking on Apply button in settings). You can only import patterns up to 150 pixels in either dimension. Other buttons are pretty self-explanatory.\n\nThe Distort button distorts the currently displayed learned pattern by a percent specified in settings.\n\nClicking on the Reconstruct! button will start the reconstruction of the image in the Input/Output area to one of the learned patterns.\n\nIf you want to animate large patterns, it is best to set the 'Animate every' setting to 100-200 iterations.\n\n\n(Options in [square brackets] have not yet been implemented.)")
 
     def showAbout(self):
-        QtWidgets.QMessageBox.information(self, 'About', "Hopfield Network implementation for a school project in Soft Computing (VSC)\n\nAuthor: Bc. Onřej Švanda\nYear: 2019\n\nVersion: 0.9.5")
+        QtWidgets.QMessageBox.about(self, 'About', "Hopfield Network implementation for a school project in Soft Computing (VSC)\n\nAuthor: Bc. Onřej Švanda\nYear: 2019\n\nVersion: 0.9.5")
 
 
     def setupCallbacks(self):
