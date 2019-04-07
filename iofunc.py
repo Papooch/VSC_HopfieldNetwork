@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.image as img
+import matplotlib.pyplot as plt
 
 def readMatrixText(filename):
    """
@@ -26,7 +28,7 @@ def readMatrixText(filename):
 
    #print(symbols)
 
-   matrix = np.zeros([rowCount, colCount], dtype=int)
+   matrix = np.zeros([rowCount, colCount], dtype=np.int16)
    matrices = []
 
    # TODO: MAJOR!! Exception checking!!!!!!!!
@@ -86,8 +88,20 @@ def readMatrixTextMultipleFiles(filelist):
       matrices.extend(readMatrixText(filename))
    return matrices
 
+def readMatrixImage(filename):
+   image = img.imread(filename)
+   grayscale = np.dot(image[..., :3], [0.2989, 0.5870, 0.1140])
+   threshold = np.mean(grayscale)
+   for pixel in np.nditer(grayscale, op_flags=['readwrite']):
+      if pixel >= threshold:
+         pixel[...] = 1
+      else:
+         pixel[...] = 0
+   return grayscale.astype(np.int16)
 
 if __name__ == "__main__":
    mats = readMatrixTextMultipleFiles(["input/in1.txt", "input/in2.txt"])   
    print(mats)
    writeMatrixText("output/out4.txt", mats, ["0", "1"])
+   mat = readMatrixImage('input/slama.png')
+   print(mat)

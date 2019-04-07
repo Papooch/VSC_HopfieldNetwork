@@ -167,7 +167,7 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>100</number>
+            <number>150</number>
            </property>
            <property name="value">
             <number>5</number>
@@ -216,7 +216,7 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>100</number>
+            <number>150</number>
            </property>
            <property name="value">
             <number>5</number>
@@ -635,10 +635,10 @@
   </action>
   <action name="actionWorkspaceLoadImage">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>[Load pattern from image...]</string>
+    <string>Load pattern from image...</string>
    </property>
   </action>
   <action name="actionWorkspaceSave">
@@ -682,7 +682,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Learn pattern(s) from text...</string>
+    <string>[Learn pattern(s) from text...]</string>
    </property>
   </action>
   <action name="actionNetworkLearnImage">
@@ -690,7 +690,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Learn pattern from image</string>
+    <string>[Learn pattern from image...]</string>
    </property>
   </action>
   <action name="actionNetworkUnlearn">

@@ -8,10 +8,10 @@ class Hopfield():
         self._dimensions = dim
         self._length = dim[0]*dim[1]
         self._patterns = []
-        self._weightMatrix = np.zeros([dim[0] * dim[1], dim[0] * dim[1]])
+        self._weightMatrix = np.zeros([dim[0] * dim[1], dim[0] * dim[1]], dtype =np.int16)
         self._energy = 0.0
         #self._patternMatrices = []
-        self._pixels = np.zeros(dim[0] * dim[1], dtype=int)
+        self._pixels = np.zeros(dim[0] * dim[1], dtype=np.int16)
 
     def learnPattern(self, pattern):
         if self.method == 0:
@@ -19,6 +19,7 @@ class Hopfield():
         else:
             self._learnPatternStrokey(pattern)
 
+    # DO NOT USE!
     def _learnPatternStrokey(self, pattern):
         # W is the weight matrix of the new pattern
         pattern = np.array(pattern).reshape([1, self._length])[0]
@@ -41,7 +42,7 @@ class Hopfield():
 
 
     def _learnPatternHebbian(self, pattern):
-        pattern = np.array(pattern, dtype=float).reshape([1, self._length])
+        pattern = np.array(pattern, dtype=np.int16).reshape([1, self._length])
         # W is the weight matrix of the new pattern
         W = (2*pattern[:].T-1) @ (2*pattern[:]-1)  
         # Explanation: 
@@ -51,14 +52,14 @@ class Hopfield():
         #        W[j, i] = W[i, j] = (2*pattern[i]-1)*(2*pattern[j]-1)
         
         # Subtract self-weights on the diagonal
-        W *= (1-np.eye(*self._weightMatrix.shape, dtype=float))
+        W *= (1-np.eye(*self._weightMatrix.shape, dtype=np.int16))
         self._weightMatrix += W
         self._patterns.append(pattern)
     
     def unlearnPattern(self, index):
         pattern = self._patterns[index]
         W = (2*pattern[:].T-1) @ (2*pattern[:]-1)
-        W *= (1-np.eye(*self._weightMatrix.shape, dtype=float))
+        W *= (1-np.eye(*self._weightMatrix.shape, dtype=np.int16))
         self._weightMatrix -= W
         del self._patterns[index]
 
@@ -82,15 +83,12 @@ class Hopfield():
 
     def updatePixel(self, id):
         deltaE = self._weightMatrix[id, :] @ self._pixels
-        #print(self._weightMatrix[id, :], ".", self._pixels, "=",deltaE)
         lastPixel = self._pixels[id]        
         if deltaE >= 0:
             self._pixels[id] = 1
         else:
             self._pixels[id] = 0
-        #print(self._pixels)
         if lastPixel != self._pixels[id]:
-
             return True
         else:
             return False
@@ -104,7 +102,7 @@ class Hopfield():
 
 if __name__ == "__main__":
 
-    mats = iofunc.readMatrixText("input/in3.txt")
+    mats = [iofunc.readMatrixText("input/in3.txt")[0]]
     initMat = iofunc.readMatrixText("input/in3.txt")[0]
     #initMat = np.random.randint(0, 2, [len(mats[0]),len(mats[0][0])], dtype = int)
     #initMat = np.array([[1,1,1,0,1]])

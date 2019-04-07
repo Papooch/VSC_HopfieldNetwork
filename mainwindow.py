@@ -7,7 +7,10 @@ from matplotlib.backends.backend_qt5agg import (
 
 from main import Main
 
-Ui_MainWindow, QMainWindow = loadUiType('HopfieldUI.ui')
+import os
+dirname = os.path.dirname(__file__)
+
+Ui_MainWindow, QMainWindow = loadUiType(os.path.join(dirname, 'HopfieldUI.ui'))
 
 class MainWindow(Ui_MainWindow, QMainWindow):
     def __init__(self, main):
@@ -44,10 +47,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.canvasIO.draw()
 
     def loadPatternsText(self):
-        filename, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","Text Files (*.txt);;All Files (*)")
+        filename, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", dirname,"Text Files (*.txt);;All Files (*)")
         if not filename:
             return
         self.main.loadPatternsText(filename)
+
+    def loadPatternImage(self):
+        filename, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", dirname,"Image Files (*.jpg *.png *.bmp);;All Files (*)")
+        if not filename:
+            return
+        self.main.loadPatternImage(filename)
 
     def savePatternText(self):
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', "pattern.txt", 'Text Files (*.txt);;All Files (*)')
@@ -56,13 +65,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.main.saveWorkspacePatternText(filename)
 
     def saveAllWorkspacePattternsText(self):
-        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', "pattern.txt", 'Text Files (*.txt);;All Files (*)')
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', os.path.join(dirname, "patterns.txt"), 'Text Files (*.txt);;All Files (*)')
         if not filename:
             return
         self.main.saveAllWorkspacePatternsText(filename)
 
     def saveOutputText(self):
-        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', "pattern.txt", 'Text Files (*.txt);;All Files (*)')
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', os.path.join(dirname, "patterns.txt"), 'Text Files (*.txt);;All Files (*)')
         if not filename:
             return
         self.main.saveOutputText(filename)
@@ -104,6 +113,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def setupCallbacks(self):
         #menu Workspace
         self.actionWorkspaceLoadText.triggered.connect(self.loadPatternsText)
+        self.actionWorkspaceLoadImage.triggered.connect(self.loadPatternImage)
         self.actionWorkspaceNew.triggered.connect(self.main.newWorkspacePattern)
         self.actionWorkspaceDelete.triggered.connect(self.main.deleteWorkspacePattern)
         self.actionWorkspaceDeleteAll.triggered.connect(self.deleteWorkspaceAll)

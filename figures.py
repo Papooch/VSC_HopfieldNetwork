@@ -1,5 +1,7 @@
 import numpy as np
 from matplotlib.figure import Figure
+import warnings
+warnings.filterwarnings("ignore", message="tight_layout : falling back to Agg renderer")
 
 class Figures():
     def __init__(self, dim=[1,1]):
@@ -17,7 +19,7 @@ class Figures():
             labelbottom = False,
             labelleft = False
         )
-        self.figure.tight_layout()
+        self.figure.tight_layout(pad=0)
         self.showPattern([[0]])
         self.clear()
 
