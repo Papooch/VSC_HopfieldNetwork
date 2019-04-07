@@ -8,10 +8,9 @@ from matplotlib.backends.backend_qt5agg import (
 from main import Main
 
 import os
-dirname = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-print(dirname)
+dirname = os.path.dirname(__file__)
 
-Ui_MainWindow, QMainWindow = loadUiType(os.path.join(dirname, 'source', 'HopfieldUI.ui'))
+Ui_MainWindow, QMainWindow = loadUiType(os.path.join(dirname, 'HopfieldUI.ui'))
 
 class MainWindow(Ui_MainWindow, QMainWindow):
     def __init__(self, main):
