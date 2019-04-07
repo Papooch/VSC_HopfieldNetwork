@@ -1,7 +1,7 @@
 VSC_HopfieldNetwork
 
 This program demostrates the use of Hopfield neural network on a 2D monochrome images.
-It was created for a chool project on the Brno University of Technology
+It was created as a school project on the Brno University of Technology
 
 Input files format
 ----
