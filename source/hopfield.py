@@ -82,7 +82,7 @@ class Hopfield():
         return self._energy
 
     def updatePixel(self, id):
-        deltaE = self._weightMatrix[id, :] @ self._pixels
+        deltaE = self._weightMatrix[id, :] @ (2*self._pixels-1)
         lastPixel = self._pixels[id]        
         if deltaE >= 0:
             self._pixels[id] = 1
